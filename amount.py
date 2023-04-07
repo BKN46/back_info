@@ -400,4 +400,4 @@ if test == 1:
               "need_minute": False, # 是否需要30分线
               'filter_high': True
               }
-    run_test(params=params1)
+    run_test(params=params2) # 选择成交量还是近60天的涨幅
