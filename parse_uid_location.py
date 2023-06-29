@@ -123,6 +123,8 @@ def get_header(cookie):
     return headers
 
 def run(headers, uids,id_list, name_list,save_file):
+    succ_num, fail_num = 0, 0
+    infos = []
     for uid in uids:
         info = []
         if uid in id_list and len(name_list[id_list.index(uid)]) > 0:
@@ -138,10 +140,13 @@ def run(headers, uids,id_list, name_list,save_file):
             info_ = [str(i) for i in info[0]]
             save_file.write(",".join(info_))  # 备份
             infos.append(info[0])
+            succ_num += 1
             time.sleep(1)  # 跑一个sleep下
         except:
+            fail_num += 1
             print(uid, "crawl fail")
-
+    print("成功抓取{}条，失败抓取{}条".format(succ_num, fail_num))
+    return infos
 
 if __name__ == '__main__':
     # 1、填入cookie
@@ -155,8 +160,7 @@ if __name__ == '__main__':
             uids.append(line.strip())
     except:
         uids = ['1859372664']  # 根据uid获取，单个用户
-    print(len(uids))
-    infos = []
+    print("用户总数{}".format(len(uids)))
 
     # 3、创建存储路径
     save_file = open('user_infos.txt', 'a+', encoding='utf-8')
@@ -165,9 +169,11 @@ if __name__ == '__main__':
         id_list = rdf['id'].vlaues.tolist()
         name_list = rdf['name'].vlaues.tolist()
     except:
-        id_list =[] # 若是没有user_info_则置为空
-    run(headers=headers, uids=uids, id_list=id_list, name_list=id_list, save_file=save_file)
-    info_head = ['id', 'name', 'verified', 'verified_reason', "location", "gender", "followers_count", "statuses_count",
+        id_list = [] # 若是没有user_info_则置为空
+        name_list = []
+    infos = run(headers=headers, uids=uids, id_list=id_list, name_list=id_list, save_file=save_file)
+    info_head = ['id', 'name', 'verified', 'verified_reason', "location", "gender",
+                 "followers_count", "statuses_count",
                  "birthday", "created_at", "description", "ip_location"]
     df = pd.DataFrame(infos, columns=info_head)
     # 4、创建存储csv文件
