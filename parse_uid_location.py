@@ -122,29 +122,7 @@ def get_header(cookie):
 
     return headers
 
-
-if __name__ == '__main__':
-    cookie = "SINAGLOBAL=7411150802454.904.1686642285119; UOR=,,www.baidu.com; XSRF-TOKEN=kcjckF4eSzijIttYY8v9mekm; SSOLoginState=1687000855; _s_tentry=weibo.com; Apache=8176000020546.344.1687000869890; ULV=1687000869900:3:3:3:8176000020546.344.1687000869890:1686729590319; SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9WFlXNTIxyzl.23nL25_2_sX5JpX5KMhUgL.FoMXeKeEeK-ESoM2dJLoIp7LxKML1KBLBKnLxKqL1hnLBoMNSh20eo2feoqN; ALF=1690474268; SCF=AkS2kR2LzZmdGLiaVBYXotBf8Atp6jn28xA919QWC3bikEvE8rRHgcSg7aJ3LTgamxKpsUYX8QXtPgl7jqxfJnM.; SUB=_2A25Jn3pMDeRhGeFK6lET8SvOzTuIHXVq7eyErDV8PUNbmtANLU_XkW9NQ4bTizhhaQAEn7jNuFehXOgKRvG27Q32; WBPSESS=5Z6s8UWJ0z4nYQUZnNpJf7PjDSJy6sHEhVMbwwosZSdx82f1X9eGwKZUBmwGElIMQ29Tkom-dzBHMDjmGckaOYc0UxNFQZGYdPpKgJp0m7O4KaY2cQ6LuaYW-bhSJsnwrMQ9BAiFFMUVMzgS_wMq3g=="
-    headers = get_header(cookie)  # 获取headers
-    uids = []
-    try:
-        filename = 'xx.txt'
-        for line in open(filename, 'r'):
-            uids.append(line.strip())
-    except:
-        uids = ['1859372664']  # 根据uid获取，单个用户
-    print(len(uids))
-    infos = []
-    save_file = open('user_infos.txt', 'a+', encoding='utf-8')
-    info_head = ['id', 'name', 'verified', 'verified_reason', "location", "gender", "followers_count", "statuses_count",
-                 "birthday", "created_at", "description", "ip_location"]
-    try:
-        rdf = pd.read_csv('user_info_.csv')
-        id_list = rdf['id'].vlaues.tolist()
-        name_list = rdf['name'].vlaues.tolist()
-    except:
-        id_list =[] # 若是没有user_info_则置为空
-
+def run(headers, uids,id_list, name_list,save_file):
     for uid in uids:
         info = []
         if uid in id_list and len(name_list[id_list.index(uid)]) > 0:
@@ -163,7 +141,34 @@ if __name__ == '__main__':
             time.sleep(1)  # 跑一个sleep下
         except:
             print(uid, "crawl fail")
-        # save_afile(info,uid)#保存单个用户信息
 
+
+if __name__ == '__main__':
+    # 1、填入cookie
+    cookie = "SINAGLOBAL=7411150802454.904.1686642285119; UOR=,,www.baidu.com; XSRF-TOKEN=kcjckF4eSzijIttYY8v9mekm; SSOLoginState=1687000855; _s_tentry=weibo.com; Apache=8176000020546.344.1687000869890; ULV=1687000869900:3:3:3:8176000020546.344.1687000869890:1686729590319; SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9WFlXNTIxyzl.23nL25_2_sX5JpX5KMhUgL.FoMXeKeEeK-ESoM2dJLoIp7LxKML1KBLBKnLxKqL1hnLBoMNSh20eo2feoqN; ALF=1690474268; SCF=AkS2kR2LzZmdGLiaVBYXotBf8Atp6jn28xA919QWC3bikEvE8rRHgcSg7aJ3LTgamxKpsUYX8QXtPgl7jqxfJnM.; SUB=_2A25Jn3pMDeRhGeFK6lET8SvOzTuIHXVq7eyErDV8PUNbmtANLU_XkW9NQ4bTizhhaQAEn7jNuFehXOgKRvG27Q32; WBPSESS=5Z6s8UWJ0z4nYQUZnNpJf7PjDSJy6sHEhVMbwwosZSdx82f1X9eGwKZUBmwGElIMQ29Tkom-dzBHMDjmGckaOYc0UxNFQZGYdPpKgJp0m7O4KaY2cQ6LuaYW-bhSJsnwrMQ9BAiFFMUVMzgS_wMq3g=="
+    headers = get_header(cookie)  # 获取headers
+    uids = []
+    # 2、批量放入uid在filename中
+    try:
+        filename = 'xx.txt'
+        for line in open(filename, 'r'):
+            uids.append(line.strip())
+    except:
+        uids = ['1859372664']  # 根据uid获取，单个用户
+    print(len(uids))
+    infos = []
+
+    # 3、创建存储路径
+    save_file = open('user_infos.txt', 'a+', encoding='utf-8')
+    try:
+        rdf = pd.read_csv('user_info_.csv')
+        id_list = rdf['id'].vlaues.tolist()
+        name_list = rdf['name'].vlaues.tolist()
+    except:
+        id_list =[] # 若是没有user_info_则置为空
+    run(headers=headers, uids=uids, id_list=id_list, name_list=id_list, save_file=save_file)
+    info_head = ['id', 'name', 'verified', 'verified_reason', "location", "gender", "followers_count", "statuses_count",
+                 "birthday", "created_at", "description", "ip_location"]
     df = pd.DataFrame(infos, columns=info_head)
+    # 4、创建存储csv文件
     df.to_csv("user_info_.csv", index=False)  # 存储为csv
