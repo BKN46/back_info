@@ -521,7 +521,7 @@ class SearchSpider(scrapy.Spider):
                 self.number += 1
                 # header = ['id', 'bid', 'user_id', 'text', 'keyword', 'article_url', 'topics', 'location', 'created_at'
                 #     , 'attitudes_count', 'comments_count', 'reposts_count', 'at_users']
-                file = open('data_1802_shouru.txt', 'a+',  encoding="utf-8")
+                file = open('./raw_dara/data_1802_shouru.txt', 'a+',  encoding="utf-8")
                 header = ['id', 'bid', 'user_id','text','retweet_id','article_url','topics','location','created_at','attitudes_count','comments_count','reposts_count','at_users']
                 ans = []
                 for row in header:
@@ -529,7 +529,7 @@ class SearchSpider(scrapy.Spider):
                 ans[4] = keyword
                 ans = [str(i) for i in ans]
                 file.write("|||".join(ans) + "\n")
-                print(self.number, keyword, weibo['user_id'], weibo['text'])
+                print(self.number, keyword, weibo['user_id'], weibo['text'], weibo['created_at'])
 
                 yield {'weibo': weibo, 'keyword': keyword}
 
