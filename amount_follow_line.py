@@ -8,10 +8,8 @@ import pandas as pd
 import numpy as np
 import time
 import matplotlib.pyplot as plt
-#plt.rcParams['font.sans-serif'] = ['SimHei']  # 用黑体显示中文
-#plt.rcParams['axes.unicode_minus'] = False  # 正常显示负号
-
-
+plt.rcParams['font.sans-serif'] = ['SimHei']  # 用黑体显示中文
+plt.rcParams['axes.unicode_minus'] = False  # 正常显示负号
 pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 500)
 pd.set_option('display.width', 1000)
@@ -40,6 +38,7 @@ def get_time_dif():
         begin_dt = dt2ts(dt, "%Y-%m-%d %H:%M")
         dif = (2 + (end_dt - begin_dt) / 3600) / 4
     return dif
+
 class DingAlarm(object):
     # 颜色参考 https://blog.csdn.net/weixin_30340353/article/details/97490020
     def dingmessage(self, msgtype="text", content="包含关键词stock",
@@ -368,7 +367,6 @@ class plot_show(object):
 
         return colors_vol
 
-
     def plot_long(self):
         fig = plt.figure(figsize=(25, 20), dpi=80)
         ax1 = fig.add_axes([0.05, 0.30, 0.9, 0.65])  # left, bottom, width, height
@@ -554,6 +552,7 @@ class plot_show(object):
 
         plt.show()
 
+# 箱体
 def get_xt_val(df, key, val=0, dt="", num = 10, is_bottom=True):
     if val != 0:
         return val
@@ -572,6 +571,7 @@ def get_xt_val(df, key, val=0, dt="", num = 10, is_bottom=True):
     val = df[key].values.tolist()[-1]
     return val
 
+# 获取成交top
 def run_amount_plot(is_follow=False,params_config={}, save_file="", page=1, max_num=6000):
     #ut = Utils()
     params = {"sort_ways": "成交额",
@@ -667,6 +667,7 @@ def run_amount_plot(is_follow=False,params_config={}, save_file="", page=1, max_
     else:
         print("剔除市值超过8000亿的TOP{}".format(len(df['代码'].values.tolist())))
     return df
+
 
 def main(name, code, params={}, need_plot=False):
     dh = DealHistory()
@@ -812,7 +813,6 @@ def main(name, code, params={}, need_plot=False):
     #print("今日成交额{}亿,近5日平均成交额{}亿,对比{}%".format(cur_amount, avg5, dif5))
     #print("今日成交额{}亿,近10日平均成交额{}亿,对比{}%".format(cur_amount, avg10, dif10))
 
-
     if need_plot == True:
         #xt_top = 34.1, 39.1
         plo = plot_show(ddf, mdf, odf, xt_bottom=xt_bottom, xt_top=xt_top, date_len=date_len)
@@ -854,14 +854,13 @@ def run(name_list, code_list):
     #print("东财概念涨幅榜http://quote.eastmoney.com/center/boardlist.html#concept_board")
 
 def main_fun(follow_list, is_follow=True):
-
     follow_list = list(set(follow_list))
     # 获取大盘top成交
     sdf = run_amount_plot(is_follow=is_follow)
     name_list = sdf['名称'].values.tolist()
     code_list = sdf['代码'].values.tolist()
+    # 分析指定股票成交额情况
     if is_follow == True and len(follow_list) > 0:
-        # 分析指定股票成交额情况
         code_list_ = []
         for name in follow_list:
             if name in name_list:
@@ -882,10 +881,9 @@ def main_fun(follow_list, is_follow=True):
 
 """
 关注股票的实时行情数据
-
+输出为csv文件
 """
 if __name__ == "__main__":
-
     follow_list = ['剑桥科技', '浪潮信息','华工科技','机器人', '中科曙光',
                    '工业富联', '深科技', '拓维信息','昆仑万维', '蓝色光标',
                    '科大讯飞', '景嘉微', '三七互娱', '金桥信息', '中国科传',
