@@ -232,7 +232,7 @@ class PlotAmount(object):
         ax2.axhline(20, color='y', linestyle='--')
         ax3.bar(dates, pct60_list, color=colors_pct)
         ax3.axhline(60, color='gray', linestyle='--')
-        curt = time.strftime("%Y-%m%d", time.localtime())
+        curt = time.strftime("%Y%m%d", time.localtime())
         for x, y in zip(dates, vol_list):
             ax2.text(x, y, y, ha='center', va='bottom', fontsize=10)
 
