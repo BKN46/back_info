@@ -669,7 +669,7 @@ def run_amount_plot(is_follow=False,params_config={}, save_file="", page=1, max_
     return df
 
 
-def main(name, code, params={}, need_plot=False):
+def get_stock_del_info(name, code, params={}, need_plot=False):
     dh = DealHistory()
     period = 'd'
     date_len = 5
@@ -754,12 +754,6 @@ def main(name, code, params={}, need_plot=False):
     elif bias_5 < 0:
         r4 = "跌破5日强势线"
 
-
-    if bias_10 < 0:
-        r2 = "跌破10日生命线"
-    elif bias_5 < 0:
-        r2 = "跌破5日强势线"
-
     if ddf['close'].values.tolist()[-1] < xt_bottom:
         r3 = "|跌破箱体，清仓离去"
     elif ddf['close'].values.tolist()[-1] > xt_top:
@@ -832,7 +826,7 @@ def run(name_list, code_list, need_plot=False):
     for i in range(len(name_list)):
         stock = name_list[i]
         code = code_list[i]
-        content, data_list = main(name=stock, code=code, params={'long_way': 1, 'period': 'd'}, need_plot=need_plot) # 选择成交量还是近60天的涨幅
+        content, data_list = get_stock_del_info(name=stock, code=code, params={'long_way': 1, 'period': 'd'}, need_plot=need_plot) # 选择成交量还是近60天的涨幅
         all_infos += "{}.{}\n\n".format(i+1, content)
         data_set.append(data_list)
 
@@ -853,7 +847,7 @@ def run(name_list, code_list, need_plot=False):
     #print("同花顺手机版热榜https://eq.10jqka.com.cn/frontend/thsTopRank/index.html?client_userid=ygEVW&back_source=wxhy&share_hxapp=isc#/")
     #print("东财概念涨幅榜http://quote.eastmoney.com/center/boardlist.html#concept_board")
 
-def main_fun(follow_list, is_follow=True, need_plot=False):
+def main(follow_list, is_follow=True, need_plot=False):
     follow_list = list(set(follow_list))
     # 获取大盘top成交
     sdf = run_amount_plot(is_follow=is_follow)
@@ -891,5 +885,5 @@ if __name__ == "__main__":
                    '紫光股份'
                    ]
 
-    main_fun(follow_list, is_follow=True) # is_follow = True运行的follow_list中股票，否则是top成交50
+    main(follow_list, is_follow=True) # is_follow = True运行的follow_list中股票，否则是top成交50
     #main_fun(follow_list, is_follow=False, need_plot=True)  # is_follow = True运行的follow_list中股票，否则是top成交50
