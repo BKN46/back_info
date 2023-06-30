@@ -1,7 +1,6 @@
 # -*- encoding=utf-8 -*-
 import time
 import warnings
-
 warnings.filterwarnings('ignore')
 import os
 from os import listdir
@@ -11,13 +10,11 @@ import pandas as pd
 import numpy as np
 import time
 import matplotlib.pyplot as plt
-
 plt.rcParams['font.sans-serif'] = ['SimHei']  # 用黑体显示中文
 plt.rcParams['axes.unicode_minus'] = False  # 正常显示负号
 pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 500)
 pd.set_option('display.width', 1000)
-
 
 # 钉钉推送消息
 class DingAlarm(object):
@@ -27,7 +24,7 @@ class DingAlarm(object):
                     webhook="default"
                     ):
         if webhook == "default":
-            # webhook = 'https://oapi.dingtalk.com/robot/send?access_token=2229f969f517444afdc973ec72008199ed72b29509ed29b6d08ba51ba08b4580'
+            #webhook = 'https://oapi.dingtalk.com/robot/send?access_token=2229f969f517444afdc973ec72008199ed72b29509ed29b6d08ba51ba08b4580'
             webhook = 'https://oapi.dingtalk.com/robot/send?access_token=e2b8a1b28f68f555614b4e0d228062c4d6b85176619320f0b8d5e22d79fc1eae'
         # 请求的URL，WebHook地址
         if "access_token" not in webhook:
@@ -44,7 +41,7 @@ class DingAlarm(object):
         }
         if msgtype == 'markdown':
             message = {
-                "msgtype": msgtype,  # markdown,
+                "msgtype": msgtype, # markdown,
                 "markdown": {
                     "title": title,  # title不能为空首屏展示内容
                     "text": content
@@ -56,7 +53,7 @@ class DingAlarm(object):
         message_json = json.dumps(message)  # 对请求的数据进行json封装
         info = requests.post(url=webhook, data=message_json, headers=header)  # 发送请求
         # 打印返回的结果 返回日志
-        # print(info.text)
+        #print(info.text)
 
     def send_dingd(self, content):
         token = "b9cc62e57820fbe20e327cbff210ad61a13945c7caf691e7165755d329d44c0b"
@@ -75,7 +72,6 @@ class DingAlarm(object):
         }
         text = "<font color=\"{}\">{}</font>".format(color_dict[color], text)
         return text
-
 
 # 爬取东方财富实时抓取股票数据
 class DealHistory(object):
@@ -125,7 +121,6 @@ class DealHistory(object):
         df['turn'] = df['turn'].astype('float')
         # df.to_csv(name+code+".csv", index=False, encoding="gbk")
         return df
-
 
 # 将top成交的N只股票实时K图画在一张图上
 class PlotAmount(object):
@@ -254,10 +249,9 @@ class PlotAmount(object):
         if need_show == True:
             plt.show()
 
-
 # 单只股票K图绘制
 class PlotStock(object):
-    def __init__(self, ddf, mdf, odf, xt_bottom, xt_top, date_len=5, my_path=""):
+    def __init__(self, ddf, mdf, odf, xt_bottom, xt_top, date_len=5,my_path=""):
         self.my_path = my_path
         self.name_list = ddf['name'].values.tolist()
         self.pct_list = ddf['pctChg'].values.tolist()
@@ -317,16 +311,17 @@ class PlotStock(object):
         self.xt_bottom = xt_bottom
         self.xt_top = xt_top
 
+
     def set_colors(self, colors_bool, close, high, pct, low, open, last_close, thr=0.1):
         colors = np.zeros(colors_bool.size, dtype="U5")
         colors[:] = "white"
         colors[colors_bool] = "white"
         for i in range(len(close)):
-            max_pct = 100 * (high[i] - last_close[i]) / last_close[i]
-            min_pct = 100 * (low[i] - last_close[i]) / last_close[i]
-            if max_pct - pct[i] < thr * 2 and pct[i] > 0 and pct[i] - min_pct >= 2 * thr:
+            max_pct = 100*(high[i]-last_close[i])/last_close[i]
+            min_pct = 100*(low[i] - last_close[i]) / last_close[i]
+            if max_pct - pct[i] < thr * 2 and pct[i] > 0 and pct[i] - min_pct >= 2*thr:
                 colors[i] = 'r'
-            elif pct[i] - min_pct <= 1.5 * thr and max_pct - pct[i] > 2 * thr and close[i] < open[i]:
+            elif pct[i] - min_pct <= 1.5 * thr and max_pct - pct[i] > 2*thr and close[i] < open[i]:
                 colors[i] = 'g'
             elif pct[i] < -5:
                 colors[i] = 'g'
@@ -351,7 +346,7 @@ class PlotStock(object):
         for i in range(len(close)):
             if pct[i] > 8:
                 colors_vol[i] = '#e377c2'
-            elif amount[i] > avg_amount[i] * 1.2 and i > 4 and amount[i] >= amount[i - 1]:
+            elif amount[i] > avg_amount[i] * 1.2 and i >4 and amount[i] >= amount[i-1]:
                 colors_vol[i] = '#8c564b'
 
         return colors_vol
@@ -387,10 +382,11 @@ class PlotStock(object):
         if self.xt_bottom > 0:
             ax1.axhline(self.xt_bottom, color='y', linestyle='--')
 
+
         for x, y in zip(self.date_list, self.amount_list):
             ax2.text(x, y, y, ha='center', va='bottom', fontsize=9)
 
-        yr = min(self.low_list) - 0.4 * (min(self.low_list) // 10)
+        yr = min(self.low_list)-0.4* (min(self.low_list)//10)
         y1 = yr
         idx = 0
         for x, y in zip(self.date_list, self.pct_list):
@@ -410,8 +406,8 @@ class PlotStock(object):
         ax1.annotate(self.low_list[min_indx], xytext=(self.dates[min_indx], self.low_list[min_indx]),
                      xy=(self.dates[min_indx], self.low_list[min_indx]), fontsize=14)
 
-        colors_vol = self.set_vol_colors(close=self.close_list, amount=self.amount_list, avg_amount=self.amo_avg_list,
-                                         pct=self.pct_list)
+
+        colors_vol = self.set_vol_colors(close=self.close_list, amount=self.amount_list, avg_amount=self.amo_avg_list, pct=self.pct_list)
         ax2.bar(self.dates, self.amount_list, color=colors_vol)
         ax2.plot(self.dates, self.amo_avg_list, c='g')
         ax2.axhline(sum(self.amount_list[-10:]) / 10, color='coral', linestyle=':')
@@ -421,7 +417,7 @@ class PlotStock(object):
         # price_axe = plt.figure().add_axes()  # 添加价格图表 K线图
         plt.xticks(fontsize=10, rotation=45)
 
-        # plt.show()
+        #plt.show()
         path = "{}/{}.png".format(self.my_path, self.name_list[0])
         plt.savefig(path)  # 保存图片
 
@@ -438,9 +434,9 @@ class PlotStock(object):
         ax4 = fig.add_axes([left2, 0.10, width2, 0.10], sharex=ax3)  # 共享ax1轴
         # plt.setp(ax4.get_xticklabels(), visible=False)  # 使x轴刻度文本不可见，因为共享，不需要显示
         plt.setp(ax5.get_xticklabels(), visible=False)  # 使x轴刻度文本不可见，因为共享，不需要显示
-        title = "{} {}/{}%".format(self.name_list[-1], self.close_list[-1], self.pct_list[-1])
+        title = "{} {}/{}%".format(self.name_list[-1],self.close_list[-1], self.pct_list[-1])
         ax1.set_title(title, fontsize=20)
-        # ax1.set_ylabel('Price', fontweight='bold', fontsize=14, rotation=0)
+        #ax1.set_ylabel('Price', fontweight='bold', fontsize=14, rotation=0)
         ax1.tick_params(labelsize=14)
         ax2.tick_params(labelsize=11)
         ax1.grid(linestyle=":")  # 增加虚线
@@ -455,12 +451,11 @@ class PlotStock(object):
         ax5.grid(linestyle=":", b="True", axis="x")
 
         # 4.判断收盘价与开盘价 确定蜡烛颜色
-        colors_bool = self.close_price >= self.open_price
+        colors_bool = self.close_price >= self. open_price
         colors = self.set_colors(colors_bool=colors_bool, close=self.close_list, high=self.high_list,
-                                 low=self.low_list, open=self.open_list, last_close=self.last_close, pct=self.pct_list,
-                                 thr=0.75)
-        edge_colors, line_colors = self.set_ege_colors(colors_bool=colors_bool, close=self.close_list,
-                                                       ma5=self.ma5_list)
+                                 low=self.low_list, open=self.open_list,last_close=self.last_close, pct=self.pct_list,thr=0.75)
+        edge_colors, line_colors = self.set_ege_colors(colors_bool=colors_bool, close=self.close_list, ma5=self.ma5_list)
+
 
         ax1.vlines(self.dates, self.min_price, self.max_price, color=line_colors)
         ax1.bar(self.dates, (self.close_price - self.open_price), bottom=self.open_price, color=colors,
@@ -473,10 +468,9 @@ class PlotStock(object):
 
         colors_bool2 = self.close_price2 >= self.open_price2
         colors2 = self.set_colors(colors_bool=colors_bool2, close=self.close_list2, high=self.high_list2,
-                                  low=self.low_list2, open=self.open_list2, last_close=self.last_close2,
-                                  pct=self.pct_list2, thr=0.1)
+                                  low=self.low_list2, open=self.open_list2,last_close=self.last_close2, pct=self.pct_list2,thr=0.1)
         edge_colors2, line_colors2 = self.set_ege_colors(colors_bool=colors_bool2, close=self.close_list2,
-                                                         ma5=self.ma5_list2)
+                                                       ma5=self.ma5_list2)
 
         ax3.vlines(self.dates2, self.min_price2, self.max_price2, color=line_colors2)
         ax3.bar(self.dates2, (self.close_price2 - self.open_price2), bottom=self.open_price2, color=colors2,
@@ -485,7 +479,7 @@ class PlotStock(object):
         ax3.plot(self.dates2, self.ma10_list2, label='MA10', c='y')
         ax3.plot(self.dates2, self.ma20_list2, label='MA20', c='c')
 
-        ax2.axhline(sum(self.amount_list[-10:]) / 10, color='coral', linestyle=':')
+        ax2.axhline(sum(self.amount_list[-10:])/10, color='coral', linestyle=':')
         ax4.axhline(sum(self.amount_list2[-10:]) / 10, color='coral', linestyle=':')
         ax3.axhline(self.last_close[-1], color='gray', linestyle=':')
         ax5.axhline(self.last_close[-1], color='gray', linestyle=':')
@@ -499,7 +493,7 @@ class PlotStock(object):
         for x, y in zip(self.date_list, self.amount_list):
             ax2.text(x, y, y, ha='center', va='bottom', fontsize=11)
 
-        y1 = min(self.low_list) - 0.1 * (min(self.low_list) // 10)
+        y1 = min(self.low_list)-0.1* (min(self.low_list)//10)
         for x, y in zip(self.date_list, self.pct_list):
             if y > 0:
                 ax1.text(x, y1, str(y), ha='center', va='bottom', fontsize=9, c='r')
@@ -525,14 +519,12 @@ class PlotStock(object):
         ax3.annotate(self.low_list2[min_indx], xytext=(self.dates2[min_indx], self.low_list2[min_indx]),
                      xy=(self.dates2[min_indx], self.low_list2[min_indx]), fontsize=14)
 
-        colors_vol = self.set_vol_colors(close=self.close_list, amount=self.amount_list, avg_amount=self.amo_avg_list,
-                                         pct=self.pct_list)
+        colors_vol = self.set_vol_colors(close=self.close_list, amount=self.amount_list, avg_amount=self.amo_avg_list, pct=self.pct_list)
         ax2.bar(self.dates, self.amount_list, color=colors_vol)
         ax2.plot(self.dates, self.amo_avg_list, c='g')
 
-        colors_vol2 = self.set_vol_colors(close=self.close_list2, amount=self.amount_list2,
-                                          avg_amount=self.amo_avg_list2,
-                                          pct=self.pct_list2)
+        colors_vol2 = self.set_vol_colors(close=self.close_list2, amount=self.amount_list2, avg_amount=self.amo_avg_list2,
+                                         pct=self.pct_list2)
 
         ax4.bar(self.dates2, self.amount_list2, color=colors_vol2)
         ax4.plot(self.dates2, self.amo_avg_list2, c='g')
@@ -544,10 +536,9 @@ class PlotStock(object):
         # price_axe = plt.figure().add_axes()  # 添加价格图表 K线图
         plt.xticks(fontsize=10, rotation=45)
 
-        # plt.show()
+        #plt.show()
         path = "{}/{}.png".format(self.my_path, self.name_list[0])
         plt.savefig(path)  # 保存图片
-
 
 # 辅助函数
 class Utils(object):
@@ -556,12 +547,16 @@ class Utils(object):
 
     # 移除之前的文件
     def remove_file(self, my_path='../data_plot/'):
-        for file_name in listdir(my_path):
-            if file_name.endswith('.png'):
-                os.remove(my_path + file_name)
-        # print(" del file success")
+        try:
+            for file_name in listdir(my_path):
+                if file_name.endswith('.png'):
+                    os.remove(my_path + file_name)
+        except:
+            print("自动删除报错，手动删除")
+        #print(" del file success")
 
-    def add_url(self, code):
+
+    def add_url(self,code):
         if code[0] == '6':
             return "https://xueqiu.com/S/SH" + code
         return "https://xueqiu.com/S/SZ" + code
@@ -569,7 +564,7 @@ class Utils(object):
     def cal_rate(self, x, y):
         return round(100 * (x - y) / y, 2)
 
-    def judge_good_info(self, name_list, open_rate, close_rate, max_rate, min_rate, vol_list,
+    def judge_good_info(self,name_list, open_rate, close_rate, max_rate, min_rate, vol_list,
                         ma5_list, pct60_list):
         good_list = []
         for i in range(len(name_list)):
@@ -644,25 +639,23 @@ class Utils(object):
         val = df[key].values.tolist()[-1]
         return val
 
-
 class Run():
     def __int__(self):
         pass
-
-    # 获取实时成交topN只股票信息
-    def crawl_stock_amount_top(self, is_follow=False, params_config={}, save_file="", page=1, max_num=6000):
+# 获取实时成交topN只股票信息
+    def crawl_stock_amount_top(self, is_follow=False,params_config={}, save_file="", page=1, max_num=6000):
         ut = Utils()
         params = {"sort_ways": "成交额",
-                  "maxn": 100, "vol_max": 150, "vol_min": 5,
-                  "pct_limit": -2,
-                  'blue_line': 30, 'yellow_line': 10,
-                  "need_show": False,
-                  "need_send": False,
-                  "need_ma5": True,
-                  "need_minute": False,
-                  'filter_high': True,
-                  'filter_green': True
-                  }
+                   "maxn": 100, "vol_max": 150, "vol_min": 5,
+                   "pct_limit": -2,
+                   'blue_line': 30, 'yellow_line': 10,
+                   "need_show": False,
+                   "need_send": False,
+                   "need_ma5": True,
+                   "need_minute": False,
+                   'filter_high': True,
+                   'filter_green': True
+                   }
         for k, v in params_config.items():
             if k in params:
                 params[k] = params_config[k]
@@ -671,8 +664,7 @@ class Run():
                "fid=f3&fs=m:0+t:6,m:0+t:80,m:1+t:2,m:1+t:23,m:0+t:81+s:2048".format(page, max_num)
         url2 = "https://push2.eastmoney.com/api/qt/clist/get?cb=jQuery1123017213004353442263_1687356361420&fid=f62&" \
                "po=1&pz={}&pn=1&np=1&fltt=2&invt=2&ut=b2884a393a59ad64002292a3e90d46a5&fs=m%3A0%2Bt%3A6%2Bf%3A!2%2" \
-               "Cm%3A0%2Bt%3A13%2Bf%3A!2%2Cm%3A0%2Bt%3A80%2Bf%3A!2%2Cm%3A1%2Bt%3A2%2Bf%3A!2%2Cm%3A1%2Bt%3A23%2Bf%3A!2%2Cm%3A0%2Bt%3A7%2Bf%3A!2%2Cm%3A1%2Bt%3A3%2Bf%3A!2".format(
-            max_num)
+               "Cm%3A0%2Bt%3A13%2Bf%3A!2%2Cm%3A0%2Bt%3A80%2Bf%3A!2%2Cm%3A1%2Bt%3A2%2Bf%3A!2%2Cm%3A1%2Bt%3A23%2Bf%3A!2%2Cm%3A0%2Bt%3A7%2Bf%3A!2%2Cm%3A1%2Bt%3A3%2Bf%3A!2".format(max_num)
 
         if is_follow == False:
             url = url1
@@ -714,10 +706,11 @@ class Run():
         df['成交额'] = df.apply(lambda x: round(x['成交额'] / 10000 / 10000, 1), axis=1)
         df = df[(df['成交额'] <= params['vol_max'])]
 
+
         up_num = 0
         for s in df['涨跌幅'].values.tolist()[:params['maxn']]:
             if s > 0: up_num += 1
-        print("在今日TOP{}中上涨个数为{},占比{}%".format(params['maxn'], up_num, round(100 * up_num / params['maxn'], 2)))
+        print("在今日TOP{}中上涨个数为{},占比{}%".format(params['maxn'], up_num, round(100*up_num/params['maxn'],2)))
 
         title = params['sort_ways']
         if params['sort_ways'] == "60日涨跌幅":
@@ -732,7 +725,7 @@ class Run():
         pct_list = df['涨跌幅'].values.tolist()
         for s in pct_list:
             if s > 0: up_num += 1
-        print("开盘为正的股票，在TOP{}中上涨个数为{},占比{}%".format(params['maxn'], up_num, round(100 * up_num / params['maxn'], 2)))
+        print("开盘为正的股票，在TOP{}中上涨个数为{},占比{}%".format(params['maxn'], up_num, round(100*up_num/params['maxn'], 2)))
         # 过滤
 
         df = df[(df['总市值'] < 10000 * 10000 * 8000)]  # 市值小于8000亿
@@ -742,24 +735,23 @@ class Run():
             df = df[(df['涨跌幅'] <= 18)]
         df = df.iloc[:50, :]
 
-        if is_follow == False:
-            df['max_rate'] = df.apply(lambda x: ut.cal_rate(x['最高'], x['昨收']), axis=1)
-            df['min_rate'] = df.apply(lambda x: ut.cal_rate(x['最低'], x['昨收']), axis=1)
-            df['open_rate'] = df.apply(lambda x: ut.cal_rate(x['今开'], x['昨收']), axis=1)
-            name_list = df['名称'].values.tolist()
-            close_rate = df['涨跌幅'].values.tolist()
-            max_rate = df['max_rate'].values.tolist()
-            min_rate = df['min_rate'].values.tolist()
-            open_rate = df['open_rate'].values.tolist()
-            vol_list = df['成交额'].values.tolist()
-            pct60_list = df['60日涨跌幅'].values.tolist()
-            print("top50 成交总额{}亿".format(round(sum(vol_list), 2)))
-            print("<成交Top图绘制>")
-            P = PlotAmount()
-            P.plot_top(name_list, open_rate, close_rate, max_rate, min_rate,
-                       vol_list, ma5_list=[], save_file=save_file, need_show=params['need_show'],
-                       title=title, blue_line=params['blue_line'], yellow_line=params['yellow_line'],
-                       pct60_list=pct60_list, sort_ways=params['sort_ways'], pct_list=close_rate)
+        df['max_rate'] = df.apply(lambda x: ut.cal_rate(x['最高'], x['昨收']), axis=1)
+        df['min_rate'] = df.apply(lambda x: ut.cal_rate(x['最低'], x['昨收']), axis=1)
+        df['open_rate'] = df.apply(lambda x: ut.cal_rate(x['今开'], x['昨收']), axis=1)
+        name_list = df['名称'].values.tolist()
+        close_rate = df['涨跌幅'].values.tolist()
+        max_rate = df['max_rate'].values.tolist()
+        min_rate = df['min_rate'].values.tolist()
+        open_rate = df['open_rate'].values.tolist()
+        vol_list = df['成交额'].values.tolist()
+        pct60_list = df['60日涨跌幅'].values.tolist()
+        print("top50 成交总额{}亿".format(round(sum(vol_list), 2)))
+        print("<成交Top图绘制>")
+        P = PlotAmount()
+        P.plot_top(name_list, open_rate, close_rate, max_rate, min_rate,
+                 vol_list, ma5_list=[], save_file=save_file, need_show=params['need_show'],
+                 title=title, blue_line=params['blue_line'], yellow_line=params['yellow_line'],
+                 pct60_list=pct60_list, sort_ways=params['sort_ways'], pct_list=close_rate)
 
         if is_follow == True:
             return stock_df
@@ -780,9 +772,9 @@ class Run():
             period = params['period']
         if period != 'd':
             date_len = 8
-        ddf = dh.get_eastmoney_trade_data(code=code, period=period)  # 日线
-        mdf = dh.get_eastmoney_trade_data(code=code, period='30')  # 30分线
-        odf = dh.get_eastmoney_trade_data(code=code, period='1')  # 1分线
+        ddf = dh.get_eastmoney_trade_data(code=code, period=period) # 日线
+        mdf = dh.get_eastmoney_trade_data(code=code, period='30') # 30分线
+        odf = dh.get_eastmoney_trade_data(code=code, period='1') # 1分线
         ddf['amount'] = ddf.apply(lambda x: round(x['amount'] / 10000 / 10000, 1), axis=1)
         ddf['last_close'] = ddf['close'].shift(1)
         ddf['MA5'] = ddf.close.rolling(window=5).mean()
@@ -808,8 +800,8 @@ class Run():
             maxn = 60
         ddf = ddf.iloc[-maxn:, :]
         mdf = mdf.iloc[-maxn:, :]
-        xt_bottom = util.get_xt_val(ddf, 'close', dt="", num=10, is_bottom=True)  # 箱体底部
-        xt_top = util.get_xt_val(ddf, 'close', dt="", num=10, is_bottom=False)  # 箱体顶部
+        xt_bottom = util.get_xt_val(ddf, 'close',  dt="", num=10, is_bottom=True) # 箱体底部
+        xt_top = util.get_xt_val(ddf, 'close',  dt="", num=10, is_bottom=False)  # 箱体顶部
         amount_list = ddf['amount'].values.tolist()
         close_list = ddf['close'].values.tolist()
         bias_lastest_60 = round(100 * (close_list[-1] - lastest_60) / lastest_60, 2)
@@ -819,17 +811,17 @@ class Run():
         highest = max(high_list[-5:])
         pct_list = ddf['pctChg'].values.tolist()
         # 30分中轨线
-        min_ma20 = round(mdf['MA20'].values.tolist()[-1], 2)
+        min_ma20 = round(mdf['MA20'].values.tolist()[-1],2)
         min_bias_20 = round(100 * (close_list[-1] - min_ma20) / min_ma20, 2)
         bias_highest = round(100 * (close_list[-1] - highest) / highest, 2)
         # 日线
         avg10 = round(sum(amount_list[-10:]) / 10, 1)
-        avg5 = round(sum(amount_list[-5:]) / 5, 1)
+        avg5 = round(sum(amount_list[-5:]) / 5,1)
         dif1 = round(100 * (close_list[-1] - xt_top) / xt_top, 2)
         dif2 = round(100 * (close_list[-1] - xt_bottom) / xt_bottom, 2)
-        ma5 = round(sum(close_list[-5:]) / 5, 2)
-        ma10 = round(sum(close_list[-10:]) / 10, 2)
-        bias_5 = round(100 * (close_list[-1] - ma5) / ma5, 2)
+        ma5 = round(sum(close_list[-5:])/5, 2)
+        ma10 = round(sum(close_list[-10:])/10, 2)
+        bias_5 = round(100*(close_list[-1]-ma5)/ma5, 2)
         bias_10 = round(100 * (close_list[-1] - ma10) / ma10, 2)
         if dif1 > 0:
             dif1 = "+{}".format(dif1)
@@ -851,9 +843,9 @@ class Run():
             r4 = "下跌行情，最高点下来超过5%，该减仓"
         elif bias_highest < -5:
             r4 = "上涨，但最高点下来超过5%，当心"
-        elif pct_list[-1] > 0 and min_bias_20 > 0 and bias_5 > 0:
+        elif pct_list[-1] > 0 and min_bias_20 > 0 and bias_5 >0:
             r4 = "突破30分中轨,5日线上"
-        elif pct_list[-1] > 0 and min_bias_20 > 0 and bias_10 > 0:
+        elif pct_list[-1] > 0 and min_bias_20 > 0 and bias_10 >0:
             r4 = "突破中轨,10日线上"
         elif bias_10 < 0:
             r4 = "跌破10日生命线，应清仓"
@@ -863,32 +855,32 @@ class Run():
         if ddf['close'].values.tolist()[-1] < xt_bottom:
             r3 = "|跌破箱体，清仓离去"
         elif ddf['close'].values.tolist()[-1] > xt_top:
-            r3 = "|突破箱体，考虑加仓"
+            r3= "|突破箱体，考虑加仓"
 
         content = ""
-        content += "{}股价{}[{}%],30分中轨{}[{}%]。MA5为{}[{}%],MA10为{}[{}%]\n 近五日最高{}[{}%],近10日箱顶{}[{}%],箱底{}[{}%],{}{}". \
+        content += "{}股价{}[{}%],30分中轨{}[{}%]。MA5为{}[{}%],MA10为{}[{}%]\n 近五日最高{}[{}%],近10日箱顶{}[{}%],箱底{}[{}%],{}{}".\
             format(name, close_list[-1], pct_list[-1],
                    min_ma20, min_bias_20,
                    ma5, bias_5,
                    ma10, bias_10,
-                   highest, bias_highest,
+                   highest,bias_highest,
                    xt_top, dif1,
                    xt_bottom, dif2,
                    r4, r3)
         cur_amount = amount_list[-1]
 
         time_dif = util.get_time_dif()
-        pred_amount = round(cur_amount / time_dif, 1)
+        pred_amount = round(cur_amount/time_dif, 1)
         last_amount = amount_list[-2]
-        pred_dif = round(100 * (pred_amount - last_amount) / last_amount, 2)
-        dif10 = round(100 * (pred_amount - avg10) / avg10, 2)
-        dif5 = round(100 * (pred_amount - avg5) / avg5, 2)
+        pred_dif = round(100*(pred_amount-last_amount)/last_amount,2)
+        dif10 = round(100*(pred_amount-avg10)/avg10, 2)
+        dif5 = round(100*(pred_amount-avg5)/avg5, 2)
 
         r1 = ""
         if pred_dif < -20:
             r1 = ",缩量考虑减仓"
         content += "\n "
-        content += "今日成交{}亿,预估成交{}亿[{}%],昨日成交{}亿;ma5为{}亿[{}%],ma10为{}亿[{}%]{}" \
+        content += "今日成交{}亿,预估成交{}亿[{}%],昨日成交{}亿;ma5为{}亿[{}%],ma10为{}亿[{}%]{}"\
             .format(cur_amount, pred_amount,
                     pred_dif, last_amount,
                     avg5, dif5,
@@ -898,10 +890,10 @@ class Run():
         data_list = [name, close_list[-1], "{}%".format(pct_list[-1]),
                      min_ma20, "{}%".format(min_bias_20),
                      cur_amount, pred_amount, "{}%".format(pred_dif),
-                     avg5, "{}%".format(dif5),
+                     avg5, "{}%".format(dif5) ,
                      ma5, "{}%".format(bias_5),
                      ma10, "{}%".format(bias_10),
-                     highest, "{}%".format(bias_highest),
+                     highest,"{}%".format(bias_highest),
                      r4,
                      avg10, "{}%".format(dif10),
                      "{}%".format(bias_lastest_60),
@@ -910,14 +902,14 @@ class Run():
                      xt_bottom, dif2, r1
                      ]
 
-        # print("今日成交额{}亿,近5日平均成交额{}亿,对比{}%".format(cur_amount, avg5, dif5))
-        # print("今日成交额{}亿,近10日平均成交额{}亿,对比{}%".format(cur_amount, avg10, dif10))
+        #print("今日成交额{}亿,近5日平均成交额{}亿,对比{}%".format(cur_amount, avg5, dif5))
+        #print("今日成交额{}亿,近10日平均成交额{}亿,对比{}%".format(cur_amount, avg10, dif10))
 
         if need_plot == True:
             # 先移除之前的文件
             my_path = './data_plot/'
 
-            # xt_top = 34.1, 39.1
+            #xt_top = 34.1, 39.1
             plo = PlotStock(ddf, mdf, odf, xt_bottom=xt_bottom, xt_top=xt_top, date_len=date_len, my_path=my_path)
             if params['k_type'] == 1:
                 plo.plot_long()
@@ -937,10 +929,8 @@ class Run():
             stock = name_list[i]
             code = code_list[i]
 
-            content, data_list = self.crawl_stock_deal_data(name=stock, code=code,
-                                                            params={'k_type': k_type, 'period': 'd'},
-                                                            need_plot=need_plot)  # 选择成交量还是近60天的涨幅
-            all_infos += "{}.{}\n\n".format(i + 1, content)
+            content, data_list = self.crawl_stock_deal_data(name=stock, code=code, params={'k_type': k_type, 'period': 'd'}, need_plot=need_plot) # 选择成交量还是近60天的涨幅
+            all_infos += "{}.{}\n\n".format(i+1, content)
             data_set.append(data_list)
 
         info_head = ['名称', '股价', '涨幅',
@@ -957,11 +947,11 @@ class Run():
 
         dateset = pd.DataFrame(data_set, columns=info_head)
         return all_infos, dateset
-        # print("同花顺手机版热榜https://eq.10jqka.com.cn/frontend/thsTopRank/index.html?client_userid=ygEVW&back_source=wxhy&share_hxapp=isc#/")
-        # print("东财概念涨幅榜http://quote.eastmoney.com/center/boardlist.html#concept_board")
+        #print("同花顺手机版热榜https://eq.10jqka.com.cn/frontend/thsTopRank/index.html?client_userid=ygEVW&back_source=wxhy&share_hxapp=isc#/")
+        #print("东财概念涨幅榜http://quote.eastmoney.com/center/boardlist.html#concept_board")
 
-    def main_deal_data(self, follow_list, output_file="top_amount_analysis.csv", is_follow=True, need_plot=False,
-                       png_file="./amount_top"):
+    def main_deal_data(self, follow_list, output_file="top_amount_analysis.csv", is_follow=True,
+                       need_plot=False,png_file="./amount_top", k_type=2):
         follow_list = list(set(follow_list))
         # 获取大盘top成交
         sdf = self.crawl_stock_amount_top(is_follow=is_follow, save_file=png_file)
@@ -969,7 +959,7 @@ class Run():
         code_list = sdf['代码'].values.tolist()
         if need_plot == True:
             util = Utils()
-            util = remove_file(my_path='./data_plot/')
+            util.remove_file(my_path='./data_plot/')
         # 分析指定股票成交额情况
         if is_follow == True and len(follow_list) > 0:
             code_list_ = []
@@ -978,31 +968,36 @@ class Run():
                     code_list_.append(code_list[name_list.index(name)])
                 else:
                     code_list_.append('000001')
-            all_infos, dateset = self.deal_data_to_df(name_list=follow_list, code_list=code_list_, need_plot=need_plot)
+            all_infos, dateset = self.deal_data_to_df(name_list=follow_list, code_list=code_list_,need_plot=need_plot,k_type=k_type)
         else:
             # 分析大盘top80成交额股票情况
-            all_infos, dateset = self.deal_data_to_df(name_list=name_list, code_list=code_list, need_plot=need_plot)
+            all_infos, dateset = self.deal_data_to_df(name_list=name_list, code_list=code_list,need_plot=need_plot,k_type=k_type)
         print("不止损的后果历历在目，既要经受亏损，还占用仓位！")
         print("成本即为最高价！！")
         print("跌破30分中轨立刻减仓，下跌不言底！！！")
         print(all_infos)
-        # dateset['mv_signal'] = dateset.apply(lambda x: '{}%'.format(x), axis=1)
+        #dateset['mv_signal'] = dateset.apply(lambda x: '{}%'.format(x), axis=1)
         dateset = dateset.sort_values(by="成交额", ascending=False)
         dateset.to_csv(output_file, index=False)
 
-
 """
-关注股票的实时行情数据
-输出为csv文件
+功能：关注股票的实时行情数据
+输出：csv文件，并画出top成交图
+参数说明：is_follow = True 只分析follow_list中股票；否则是top成交50
+    need_plot=True会画图，k_type=2画出分时和k线融合图
+
+备注：在该代码路径下创建一个data_plot文件夹用于存储图片
 """
 if __name__ == "__main__":
-    follow_list = ['剑桥科技', '浪潮信息', '华工科技', '机器人', '中科曙光',
-                   '工业富联', '深科技', '拓维信息', '昆仑万维', '蓝色光标',
+    follow_list = ['剑桥科技', '浪潮信息','华工科技','机器人', '中科曙光',
+                   '工业富联', '深科技', '拓维信息','昆仑万维', '蓝色光标',
                    '科大讯飞', '景嘉微', '三七互娱', '金桥信息', '中国科传',
-                   '拓尔思', '万兴科技', '中文在线', '沪电股份', '易华录',
+                   '拓尔思','万兴科技', '中文在线', '沪电股份', '易华录',
                    '紫光股份'
                    ]
     run = Run()
-    # run.main_deal_data(follow_list, is_follow=True, output_file="top_amount_analysis.csv")
-    # main_deal_data(follow_list, is_follow=True) # is_follow = True运行的follow_list中股票，否则是top成交50
-    run.main_deal_data(follow_list, is_follow=False, need_plot=True)  # is_follow = True运行的follow_list中股票，否则是top成交50
+    # 运行关注股票，查看行情
+    run.main_deal_data(follow_list, is_follow=True, output_file="top_amount_analysis.csv", need_plot=True)
+
+    # 运行大盘成交top股票，查看行情
+    #run.main_deal_data(follow_list, is_follow=False, need_plot=True,k_type=2)
