@@ -249,7 +249,8 @@ class PlotAmount(object):
 
 # 单只股票K图绘制
 class PlotStock(object):
-    def __init__(self, ddf, mdf, odf, xt_bottom, xt_top, date_len=5):
+    def __init__(self, ddf, mdf, odf, xt_bottom, xt_top, date_len=5,my_path=""):
+        self.my_path = my_path
         self.name_list = ddf['name'].values.tolist()
         self.pct_list = ddf['pctChg'].values.tolist()
         self.high_list = ddf['high'].values.tolist()
@@ -414,7 +415,9 @@ class PlotStock(object):
         # price_axe = plt.figure().add_axes()  # 添加价格图表 K线图
         plt.xticks(fontsize=10, rotation=45)
 
-        plt.show()
+        #plt.show()
+        path = "{}/{}.png".format(self.my_path, self.name_list[0])
+        plt.savefig(path)  # 保存图片
 
     def plot_view(self):
         # https://matplotlib.org/stable/api/axes_api.html#axis-limits
@@ -531,12 +534,22 @@ class PlotStock(object):
         # price_axe = plt.figure().add_axes()  # 添加价格图表 K线图
         plt.xticks(fontsize=10, rotation=45)
 
-        plt.show()
+        #plt.show()
+        path = "{}/{}.png".format(self.my_path, self.name_list[0])
+        plt.savefig(path)  # 保存图片
 
 # 辅助函数
 class Utils(object):
     def __init__(self):
         pass
+
+    # 移除之前的文件
+    def remove_file(self, my_path='../data_plot/'):
+        for file_name in listdir(my_path):
+            if file_name.endswith('.png'):
+                os.remove(my_path + file_name)
+        print(" del file success")
+
 
     def add_url(self,code):
         if code[0] == '6':
@@ -631,7 +644,7 @@ class Run():
                    "maxn": 100, "vol_max": 150, "vol_min": 5,
                    "pct_limit": -2,
                    'blue_line': 30, 'yellow_line': 10,
-                   "need_show": True,
+                   "need_show": False,
                    "need_send": False,
                    "need_ma5": True,
                    "need_minute": False,
@@ -729,7 +742,7 @@ class Run():
             vol_list = df['成交额'].values.tolist()
             pct60_list = df['60日涨跌幅'].values.tolist()
             print("top50 成交总额{}亿".format(round(sum(vol_list), 2)))
-
+            print("<成交Top图绘制>")
             P = PlotAmount()
             P.plot_top(name_list, open_rate, close_rate, max_rate, min_rate,
                      vol_list, ma5_list=[], save_file=save_file, need_show=params['need_show'],
@@ -886,13 +899,15 @@ class Run():
         #print("今日成交额{}亿,近10日平均成交额{}亿,对比{}%".format(cur_amount, avg10, dif10))
 
         if need_plot == True:
+            # 先移除之前的文件
+            my_path = './data_plot/'
+            util.remove_file(my_path=my_path)
             #xt_top = 34.1, 39.1
-            plo = PlotStock(ddf, mdf, odf, xt_bottom=xt_bottom, xt_top=xt_top, date_len=date_len)
+            plo = PlotStock(ddf, mdf, odf, xt_bottom=xt_bottom, xt_top=xt_top, date_len=date_len, my_path=my_path)
             if params['k_type'] == 1:
                 plo.plot_long()
             else:
                 plo.plot_view()
-        exit()
 
         return content, data_list
 
@@ -926,10 +941,10 @@ class Run():
         #print("同花顺手机版热榜https://eq.10jqka.com.cn/frontend/thsTopRank/index.html?client_userid=ygEVW&back_source=wxhy&share_hxapp=isc#/")
         #print("东财概念涨幅榜http://quote.eastmoney.com/center/boardlist.html#concept_board")
 
-    def main_deal_data(self, follow_list, output_file="top_amount_analysis.csv", is_follow=True, need_plot=False):
+    def main_deal_data(self, follow_list, output_file="top_amount_analysis.csv", is_follow=True, need_plot=False,png_file="./amount_top"):
         follow_list = list(set(follow_list))
         # 获取大盘top成交
-        sdf = self.crawl_stock_amount_top(is_follow=is_follow)
+        sdf = self.crawl_stock_amount_top(is_follow=is_follow, save_file=png_file)
         name_list = sdf['名称'].values.tolist()
         code_list = sdf['代码'].values.tolist()
         # 分析指定股票成交额情况
@@ -966,4 +981,4 @@ if __name__ == "__main__":
     run = Run()
     #run.main_deal_data(follow_list, is_follow=True, output_file="top_amount_analysis.csv")
     #main_deal_data(follow_list, is_follow=True) # is_follow = True运行的follow_list中股票，否则是top成交50
-    run.main_deal_data(follow_list, is_follow=False, need_plot=False)  # is_follow = True运行的follow_list中股票，否则是top成交50
+    run.main_deal_data(follow_list, is_follow=False, need_plot=True)  # is_follow = True运行的follow_list中股票，否则是top成交50
