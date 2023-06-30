@@ -966,7 +966,7 @@ class Run():
         code_list = sdf['代码'].values.tolist()
         if need_plot == True:
             util = Utils()
-            util = remove_file(my_path='./data_plot/')
+            util.remove_file(my_path='./data_plot/')
         # 分析指定股票成交额情况
         if is_follow == True and len(follow_list) > 0:
             code_list_ = []
