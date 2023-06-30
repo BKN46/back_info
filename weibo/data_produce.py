@@ -48,7 +48,7 @@ def run(files):
     print("最终数据条数:{}".format(df.shape))
 
     return df
-    
+
 if __name__ == "__main__":
     files = ['data1901_wujia.txt', ]
     col = ['id', 'user_id', 'text', 'retweet_id', 'topics', 'location', 'created_at',

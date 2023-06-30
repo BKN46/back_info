@@ -797,12 +797,12 @@ def main(name, code, params={}, need_plot=False):
 
     data_list = [name, close_list[-1], "{}%".format(pct_list[-1]),
                  min_ma20, "{}%".format(min_bias_20),
-                 cur_amount, avg5, "{}%".format(dif5) ,
+                 cur_amount, pred_amount, "{}%".format(pred_dif),
+                 avg5, "{}%".format(dif5) ,
                  ma5, "{}%".format(bias_5),
                  ma10, "{}%".format(bias_10),
                  highest,"{}%".format(bias_highest),
                  r4,
-                 pred_amount, "{}%".format(pred_dif),
                  avg10, "{}%".format(dif10),
                  "{}%".format(bias_lastest_60),
                  "{}%".format(bias_lastest_20),
@@ -826,34 +826,34 @@ def main(name, code, params={}, need_plot=False):
 # https://www.cnblogs.com/Gelthin2017/p/14177100.html 颜色设置参考
 # https://blog.csdn.net/u010705932/article/details/123929884
 
-def run(name_list, code_list):
+def run(name_list, code_list, need_plot=False):
     data_set = []
     all_infos = ""
     for i in range(len(name_list)):
         stock = name_list[i]
         code = code_list[i]
-        content, data_list = main(name=stock, code=code, params={'long_way': 1, 'period': 'd'}, need_plot=False) # 选择成交量还是近60天的涨幅
+        content, data_list = main(name=stock, code=code, params={'long_way': 1, 'period': 'd'}, need_plot=need_plot) # 选择成交量还是近60天的涨幅
         all_infos += "{}.{}\n\n".format(i+1, content)
         data_set.append(data_list)
 
-    info_head = ['名称','股价','涨幅',
-                 '30分中轨','偏离中轨',
-                 '成交额', '五日均额', '偏离五均额',
-                 'MA5','偏离MA5',
-                 'MA10', '偏离MA10',
-                 '5日峰价', '偏离最高',
+    info_head = ['名称', '股价', '涨幅',
+                 '30分中轨', '偏离中轨',
+                 '成交额', '预估成交', '对比昨日',
+                 '五日均额', '对比五均额',
+                 'MA5', '对比MA5',
+                 'MA10', '对比MA10',
+                 '5日峰价', '对比最高',
                  '说明',
-                 '预估成交', '对比昨日',
-                 '十日均额', '偏离十均额',
-                 '近60日涨幅','近20日涨幅',
-                 '箱顶','btop','箱底', 'bbo','备注']
+                 '十日均额', '对比十均额',
+                 '近60日涨幅', '近20日涨幅',
+                 '箱顶', 'btop', '箱底', 'bbo', '备注']
 
     dateset = pd.DataFrame(data_set, columns=info_head)
     return all_infos, dateset
     #print("同花顺手机版热榜https://eq.10jqka.com.cn/frontend/thsTopRank/index.html?client_userid=ygEVW&back_source=wxhy&share_hxapp=isc#/")
     #print("东财概念涨幅榜http://quote.eastmoney.com/center/boardlist.html#concept_board")
 
-def main_fun(follow_list, is_follow=True):
+def main_fun(follow_list, is_follow=True, need_plot=False):
     follow_list = list(set(follow_list))
     # 获取大盘top成交
     sdf = run_amount_plot(is_follow=is_follow)
@@ -867,10 +867,10 @@ def main_fun(follow_list, is_follow=True):
                 code_list_.append(code_list[name_list.index(name)])
             else:
                 code_list_.append('000001')
-        all_infos, dateset = run(name_list=follow_list, code_list=code_list_)
+        all_infos, dateset = run(name_list=follow_list, code_list=code_list_,need_plot=need_plot)
     else:
         # 分析大盘top80成交额股票情况
-        all_infos, dateset = run(name_list=name_list, code_list=code_list)
+        all_infos, dateset = run(name_list=name_list, code_list=code_list,need_plot=need_plot)
     print("不止损的后果历历在目，既要经受亏损，还占用仓位！")
     print("成本即为最高价！！")
     print("跌破30分中轨立刻减仓，下跌不言底！！！")
@@ -891,5 +891,5 @@ if __name__ == "__main__":
                    '紫光股份'
                    ]
 
-    #main_fun(follow_list, is_follow=True) # is_follow = True运行的follow_list中股票，否则是top成交50
-    main_fun(follow_list, is_follow=False)  # is_follow = True运行的follow_list中股票，否则是top成交50
+    main_fun(follow_list, is_follow=True) # is_follow = True运行的follow_list中股票，否则是top成交50
+    #main_fun(follow_list, is_follow=False, need_plot=True)  # is_follow = True运行的follow_list中股票，否则是top成交50
