@@ -798,20 +798,23 @@ class Run():
         odf['MA20'] = odf.close.rolling(window=20).mean()
         # save_file若是不设置则默认不保存 need_show=True才画图  need_minute=True才会画30分钟K线
         start_date = ""
-        maxn = 60
+
+        lastest_60 = ddf['close'].values.tolist()[-60]
+        lastest_20 = ddf['close'].values.tolist()[-20]
+
+        maxn = 30
+        # k_type =2 可以画出分时图+k线图
         if params['k_type'] == 1:
             maxn = 60
         ddf = ddf.iloc[-maxn:, :]
         mdf = mdf.iloc[-maxn:, :]
-
         xt_bottom = util.get_xt_val(ddf, 'close', dt="", num=10, is_bottom=True)  # 箱体底部
         xt_top = util.get_xt_val(ddf, 'close', dt="", num=10, is_bottom=False)  # 箱体顶部
         amount_list = ddf['amount'].values.tolist()
         close_list = ddf['close'].values.tolist()
-        lastest_60 = close_list[-60]
         bias_lastest_60 = round(100 * (close_list[-1] - lastest_60) / lastest_60, 2)
-        lastest_20 = close_list[-20]
         bias_lastest_20 = round(100 * (close_list[-1] - lastest_20) / lastest_20, 2)
+
         high_list = ddf['high'].values.tolist()
         highest = max(high_list[-5:])
         pct_list = ddf['pctChg'].values.tolist()
@@ -966,7 +969,7 @@ class Run():
         code_list = sdf['代码'].values.tolist()
         if need_plot == True:
             util = Utils()
-            util.remove_file(my_path='./data_plot/')
+            util = remove_file(my_path='./data_plot/')
         # 分析指定股票成交额情况
         if is_follow == True and len(follow_list) > 0:
             code_list_ = []
